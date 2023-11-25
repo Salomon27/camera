@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caméra</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background-color: #0056b3;
+        }
+
+        .header {
+            background-color: #f8f8f8;
+            padding: 10px 0;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #333;
+        }
+
+        .section {
+            margin-bottom: 20px;
+        }
+
+        /* Example of styling form elements */
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="email"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        /* Style for a simple navigation bar */
+        .navbar {
+            background-color: #007bff;
+            overflow: hidden;
+        }
+
+        .navbar a {
+            float: left;
+            display: block;
+            color: #f2f2f2;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .navbar a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+
+        /* Style for a simple footer */
+        .footer {
+            background-color: #f8f8f8;
+            padding: 10px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Caméra</h1>
+        </div>
+        <video id="video" width="640" height="480" autoplay></video>
+        <button id="requestPermissionButton" class="button">Demander l'autorisation de la caméra</button>
+        <button id="captureButton" class="button" style="display: none;">Prendre une photo</button>
+        <canvas id="canvas" width="1280" height="960"></canvas>
+    </div>
+
+    <script>
+        var video = document.getElementById('video');
+        var captureButton = document.getElementById('captureButton');
+        var requestPermissionButton = document.getElementById('requestPermissionButton');
+
+        function startCamera() {
+            // Demander l'autorisation d'accéder à la caméra
+            navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 960 } })
+                .then(function (stream) {
+                    video.srcObject = stream;
+                    requestPermissionButton.style.display = 'none';
+                    captureButton.style.display = 'inline-block';
+                })
+                .catch(function (error) {
+                    console.error('Erreur d\'accès à la caméra: ', error);
+                });
+        }
+
+        requestPermissionButton.addEventListener('click', startCamera);
+
+        // Prendre une photo
+        captureButton.addEventListener('click', function () {
+            var canvas = document.getElementById('canvas');
+            var context = canvas.getContext('2d');
+
+            // Dessiner la vidéo sur le canvas
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Obtenir l'image sous forme de base64
+            var imageData = canvas.toDataURL('image/png');
+
+            // Créer un lien pour télécharger l'image
+            var link = document.createElement('a');
+            link.href = imageData;
+            link.download = 'photo.png';
+            link.click();
+        });
+    </script>
+</body>
+</html>
